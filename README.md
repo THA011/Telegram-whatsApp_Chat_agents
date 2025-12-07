@@ -1,5 +1,7 @@
 # chat_agents
 
+[![CI](https://github.com/THA011/Telegram-whatsApp_Chat_agents/actions/workflows/ci.yml/badge.svg)](https://github.com/THA011/Telegram-whatsApp_Chat_agents/actions/workflows/ci.yml)
+
 This project contains two small messaging agents (Telegram and WhatsApp) that reply to user messages using a lightweight local answer engine.
 
 Goals

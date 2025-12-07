@@ -6,4 +6,5 @@ scikit-learn>=1.0
 numpy>=1.22
 requests>=2.28
 pytest>=7.0
+PyYAML>=6.0
 

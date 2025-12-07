@@ -52,8 +52,10 @@ def whatsapp_webhook():
         'to': from_number,
         'text': body,
     }
-    enqueue_message(job)
-    resp.message('Message received and is being processed. You will receive a reply shortly.')
+    status = enqueue_message(job)
+    job_id = status.get('job_id')
+    eta = status.get('eta_seconds', 0)
+    resp.message(f"Received (job {job_id}). Estimated reply in ~{eta} seconds.")
     return Response(str(resp), mimetype='application/xml')
 
 

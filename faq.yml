@@ -1,0 +1,30 @@
+faq:
+  - q: "Who submitted the monthly report?"
+    a: "Submitted by: Mwatha Maina"
+
+  - q: "Who is the report addressed to?"
+    a: "Reporting to: Mr Julius Mwangi Mbugua (CEO)"
+
+  - q: "What role and period are covered by the report?"
+    a: "Monthly report for November — credit intern (two-week internship period described)."
+
+  - q: "What were the main duties performed during the internship?"
+    a: "Handled client loan files, updated loan register logbooks, made client calls for arrears recovery, and assisted with loan appraisal and document filing."
+
+  - q: "How were client files organized?"
+    a: "Files were arranged by membership number; each file includes ID copy, KRA pin, loan forms, bank/M-Pesa statements, guarantor details, and collateral papers."
+
+  - q: "What was the recovery result from calls during the internship?"
+    a: "Recovered approximately KES 1,919,691 in arrears during calls handled."
+
+  - q: "What technical systems were used?"
+    a: "Used the Vanguard Financials dashboard to retrieve member statements, statistics, and loan histories."
+
+  - q: "What loan appraisal rules were learned?"
+    a: "Loanable amounts depend on deposits, guarantor capacity, collateral valuation, and arrears; vehicles and land have specific valuation percentages."
+
+  - q: "How should the bot be used for setup questions?"
+    a: "Ask about Telegram or Twilio setup and the bot will return concise, practical steps."
+
+  - q: "How do I reset the bot or restart services?"
+    a: "Stop the process and restart the service with correct environment variables; consult the README for details."

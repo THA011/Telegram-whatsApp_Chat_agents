@@ -9,12 +9,13 @@ from pathlib import Path
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 import re
+import yaml
 
 
 class Answerer:
     def __init__(self, kb_path: str = None, threshold: float = 0.2):
-        # Expect a markdown-style FAQ where questions and answers are grouped.
-        self.kb_path = kb_path or Path(__file__).parent / 'faq.md'
+    # Expect YAML `faq.yml` by default with structure: faq: - q: ... - a: ...
+    self.kb_path = kb_path or Path(__file__).parent / 'faq.yml'
         self.threshold = threshold
         self.questions = []
         self.answers = []
@@ -26,24 +27,33 @@ class Answerer:
         p = Path(self.kb_path)
         if not p.exists():
             return
-        txt = p.read_text(encoding='utf-8')
-        # Split into blocks separated by blank lines
-        blocks = [b.strip() for b in re.split(r"\n\s*\n", txt) if b.strip()]
-        for block in blocks:
-            lines = [l.strip() for l in block.splitlines() if l.strip()]
-            if not lines:
-                continue
-            # Determine question and answer
-            q = lines[0]
-            # remove common prefixes like 'Q:' or '### Q:'
-            q = re.sub(r'^#+\s*', '', q)
-            q = re.sub(r'^Q:\s*', '', q)
-            q = q.strip()
-            # answer is the next non-empty line(s)
-            a = '\n'.join(lines[1:]).strip() if len(lines) > 1 else ''
-            if q and a:
-                self.questions.append(q)
-                self.answers.append(a)
+        # If YAML, parse structured entries
+        if p.suffix.lower() in ('.yml', '.yaml'):
+            data = yaml.safe_load(p.read_text(encoding='utf-8'))
+            items = data.get('faq') if isinstance(data, dict) else None
+            if items:
+                for item in items:
+                    q = item.get('q')
+                    a = item.get('a')
+                    if q and a:
+                        self.questions.append(str(q).strip())
+                        self.answers.append(str(a).strip())
+        else:
+            # fallback: parse simple markdown blocks (older format)
+            txt = p.read_text(encoding='utf-8')
+            blocks = [b.strip() for b in re.split(r"\n\s*\n", txt) if b.strip()]
+            for block in blocks:
+                lines = [l.strip() for l in block.splitlines() if l.strip()]
+                if not lines:
+                    continue
+                q = lines[0]
+                q = re.sub(r'^#+\s*', '', q)
+                q = re.sub(r'^Q:\s*', '', q)
+                q = q.strip()
+                a = '\n'.join(lines[1:]).strip() if len(lines) > 1 else ''
+                if q and a:
+                    self.questions.append(q)
+                    self.answers.append(a)
 
         if self.questions:
             self.vectorizer = TfidfVectorizer().fit(self.questions)

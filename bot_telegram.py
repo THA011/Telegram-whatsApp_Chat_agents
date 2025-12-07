@@ -50,10 +50,13 @@ def main():
     def echo(update, context):
         text = update.message.text
         chat_id = update.message.chat_id
-        # enqueue for background processing; send immediate acknowledgement
+        # enqueue for background processing; send immediate acknowledgement with job id + ETA
         job = {'platform': 'telegram', 'to': chat_id, 'text': text}
-        enqueue_message(job)
-        update.message.reply_text('Message received and being processed. You will receive a reply shortly.')
+        status = enqueue_message(job)
+        job_id = status.get('job_id')
+        eta = status.get('eta_seconds', 0)
+        ack = f"Received (job {job_id}). Estimated reply in ~{eta} seconds."
+        update.message.reply_text(ack)
 
     updater = Updater(TELEGRAM_TOKEN, use_context=True)
     dp = updater.dispatcher

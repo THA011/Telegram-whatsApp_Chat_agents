@@ -21,6 +21,7 @@ import os
 import threading
 import time
 import logging
+import uuid
 from queue import Queue, Empty
 from typing import Dict
 
@@ -28,11 +29,23 @@ logger = logging.getLogger(__name__)
 
 _queue = Queue()
 _workers_started = False
+_num_workers = 0
+_avg_process_time = 2.5  # seconds, rough average per job for ETA calculation
 
 
 def enqueue_message(job: Dict):
-    """Enqueue a job for background processing."""
-    _queue.put(job)
+    """Enqueue a job for background processing and return a small status dict.
+
+    Returns: {'job_id': str, 'position': int, 'eta_seconds': int}
+    """
+    job_id = str(uuid.uuid4())
+    job_with_id = dict(job)
+    job_with_id['job_id'] = job_id
+    _queue.put(job_with_id)
+    position = _queue.qsize()
+    workers = max(1, _num_workers)
+    eta = int((position / workers) * _avg_process_time)
+    return {'job_id': job_id, 'position': position, 'eta_seconds': eta}
 
 
 def _process_job(job: Dict):
@@ -96,14 +109,16 @@ def _worker_loop(stop_event: threading.Event):
 
 def start_workers(num_workers: int = 1):
     global _workers_started
+    global _num_workers
     if _workers_started:
         return
     _workers_started = True
+    _num_workers = max(1, int(num_workers))
     stop_event = threading.Event()
-    for i in range(num_workers):
+    for i in range(_num_workers):
         t = threading.Thread(target=_worker_loop, args=(stop_event,), daemon=True)
         t.start()
-    logger.info('Started %d background worker(s)', num_workers)
+    logger.info('Started %d background worker(s)', _num_workers)
 
 
 __all__ = ['enqueue_message', 'start_workers']
