@@ -8,7 +8,7 @@ Goals
 
 What is included
 - `ai_core.py` — a TF-IDF based answerer that searches `kb.txt` for matching sentences.
-- `kb.txt` — sample knowledge base (plain sentences); edit this file to add domain-specific answers.
+- `faq.md` — FAQ-style knowledge base using simple Q/A markdown; edit this file to add domain-specific questions and answers.
 - `bot_telegram.py` — telegram polling bot; replies using `ai_core.Answerer`.
 - `bot_whatsapp.py` — Flask webhook for Twilio (WhatsApp); replies using `ai_core.Answerer`.
 - `.env.example` — example environment variables for tokens and Twilio configuration.

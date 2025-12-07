@@ -8,28 +8,46 @@ with calls to an external LLM if you prefer (OpenAI, or local LLM) for richer an
 from pathlib import Path
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
+import re
 
 
 class Answerer:
     def __init__(self, kb_path: str = None, threshold: float = 0.2):
-        self.kb_path = kb_path or Path(__file__).parent / 'kb.txt'
+        # Expect a markdown-style FAQ where questions and answers are grouped.
+        self.kb_path = kb_path or Path(__file__).parent / 'faq.md'
         self.threshold = threshold
-        self.sentences = []
+        self.questions = []
+        self.answers = []
         self.vectorizer = None
         self.tfidf = None
-        self._load_kb()
+        self._load_faq()
 
-    def _load_kb(self):
+    def _load_faq(self):
         p = Path(self.kb_path)
         if not p.exists():
-            self.sentences = []
             return
         txt = p.read_text(encoding='utf-8')
-        # simple split on newlines and filter empty
-        self.sentences = [s.strip() for s in txt.splitlines() if s.strip()]
-        if self.sentences:
-            self.vectorizer = TfidfVectorizer().fit(self.sentences)
-            self.tfidf = self.vectorizer.transform(self.sentences)
+        # Split into blocks separated by blank lines
+        blocks = [b.strip() for b in re.split(r"\n\s*\n", txt) if b.strip()]
+        for block in blocks:
+            lines = [l.strip() for l in block.splitlines() if l.strip()]
+            if not lines:
+                continue
+            # Determine question and answer
+            q = lines[0]
+            # remove common prefixes like 'Q:' or '### Q:'
+            q = re.sub(r'^#+\s*', '', q)
+            q = re.sub(r'^Q:\s*', '', q)
+            q = q.strip()
+            # answer is the next non-empty line(s)
+            a = '\n'.join(lines[1:]).strip() if len(lines) > 1 else ''
+            if q and a:
+                self.questions.append(q)
+                self.answers.append(a)
+
+        if self.questions:
+            self.vectorizer = TfidfVectorizer().fit(self.questions)
+            self.tfidf = self.vectorizer.transform(self.questions)
 
     def answer(self, query: str) -> dict:
         """Return a dict: {answer:str, score:float, source_index:int or None}
@@ -44,8 +62,8 @@ class Answerer:
         if q.lower() in ('hi', 'hello', 'hey', 'good morning', 'good evening'):
             return {'answer': 'Hello — tell me what you need help with or ask a question.', 'score': 1.0, 'index': None}
 
-        if not self.sentences:
-            return {'answer': "I don't have knowledge loaded yet. Please add sentences to kb.txt.", 'score': 0.0, 'index': None}
+        if not self.questions:
+            return {'answer': "I don't have any FAQ loaded yet. Please add entries to faq.md.", 'score': 0.0, 'index': None}
 
         q_vec = self.vectorizer.transform([q])
         sims = (self.tfidf @ q_vec.T).toarray().ravel()
@@ -56,7 +74,7 @@ class Answerer:
             return {'answer': "I couldn't find a confident answer. Can you rephrase or give more details?",
                     'score': best_score, 'index': None}
 
-        return {'answer': self.sentences[best_idx], 'score': best_score, 'index': best_idx}
+        return {'answer': self.answers[best_idx], 'score': best_score, 'index': best_idx}
 
 
 if __name__ == '__main__':
