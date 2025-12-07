@@ -1,6 +1,29 @@
-Welcome to the support channel. Ask me about account setup, pricing, and general usage.
-You can ask me how to connect the Telegram bot or how to set up Twilio for WhatsApp.
-Demo accounts are recommended before using any live trading strategies.
-To reset your bot, stop the process and restart the server with the correct environment variables.
-We support basic features: answering questions, showing help, and echoing simple queries.
-If you need step-by-step setup, ask for the "installation" instructions and include your OS.
+Who submitted the monthly report?
+Submitted by: Mwatha Maina
+
+Who is the report addressed to?
+Reporting to: Mr Julius Mwangi Mbugua (CEO)
+
+What is the role and period covered by the report?
+Monthly report for November — credit intern (two-week internship period described).
+
+What were the main duties performed during the internship?
+Handled client loan files, updated loan register logbooks, made client calls for arrears recovery, and assisted with loan appraisal and document filing.
+
+How were client files organized?
+Files were arranged by membership number; each file includes ID copy, KRA pin, loan forms, bank/M-Pesa statements, guarantor details, and collateral papers.
+
+What was the recovery result from calls during the internship?
+Recovered approximately KES 1,919,691 in arrears during calls handled.
+
+What technical systems were used?
+Used the Vanguard Financials dashboard to retrieve member statements, statistics, and loan histories.
+
+What loan appraisal rules were learned?
+Loanable amounts depend on deposits, guarantor capacity, collateral valuation, and arrears; vehicles and land have specific valuation percentages.
+
+How should the bot be used for setup questions?
+Ask about Telegram or Twilio setup and the bot will return concise, practical steps.
+
+How do I reset the bot or restart services?
+Stop the process and restart the service with correct environment variables; consult the README for details.

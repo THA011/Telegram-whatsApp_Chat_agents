@@ -25,7 +25,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 from ai_core import Answerer
+from logging_config import configure_logging
+from message_queue import enqueue_message, start_workers
 
+configure_logging()
+start_workers()
 app = Flask(__name__)
 answerer = Answerer()
 
@@ -42,8 +46,14 @@ def whatsapp_webhook():
         resp.message("I didn't receive your message. Please send a question.")
         return Response(str(resp), mimetype='application/xml')
 
-    ans = answerer.answer(body)
-    resp.message(ans['answer'])
+    # enqueue for background processing; reply immediately to webhook
+    job = {
+        'platform': 'whatsapp',
+        'to': from_number,
+        'text': body,
+    }
+    enqueue_message(job)
+    resp.message('Message received and is being processed. You will receive a reply shortly.')
     return Response(str(resp), mimetype='application/xml')
 
 

@@ -18,9 +18,17 @@ TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+from logging_config import configure_logging
+from message_queue import enqueue_message, start_workers
+
+
 from ai_core import Answerer
 
+
 def main():
+    configure_logging()
+    start_workers()
+
     if not TELEGRAM_TOKEN:
         logger.error('TELEGRAM_TOKEN not set in environment')
         return
@@ -41,8 +49,11 @@ def main():
 
     def echo(update, context):
         text = update.message.text
-        resp = answerer.answer(text)
-        update.message.reply_text(resp['answer'])
+        chat_id = update.message.chat_id
+        # enqueue for background processing; send immediate acknowledgement
+        job = {'platform': 'telegram', 'to': chat_id, 'text': text}
+        enqueue_message(job)
+        update.message.reply_text('Message received and being processed. You will receive a reply shortly.')
 
     updater = Updater(TELEGRAM_TOKEN, use_context=True)
     dp = updater.dispatcher
