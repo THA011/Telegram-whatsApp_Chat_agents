@@ -1,0 +1,6 @@
+Welcome to the support channel. Ask me about account setup, pricing, and general usage.
+You can ask me how to connect the Telegram bot or how to set up Twilio for WhatsApp.
+Demo accounts are recommended before using any live trading strategies.
+To reset your bot, stop the process and restart the server with the correct environment variables.
+We support basic features: answering questions, showing help, and echoing simple queries.
+If you need step-by-step setup, ask for the "installation" instructions and include your OS.
