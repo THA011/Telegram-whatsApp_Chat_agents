@@ -48,12 +48,4 @@ Design notes
 Security and privacy
 - This implementation does not forward user messages to third-party language services. If you later integrate an external API, document that change and obtain any required permissions from users.
 
-Final recommendations
-- Populate `kb.txt` with concise question-and-answer pairs. Short, precise sentences improve match quality.
-- Keep secrets out of source control. Copy `.env.example` to `.env` locally and never commit the `.env` file.
-- Run the services first on a development host and verify behaviour using test phone numbers or a Telegram test chat.
-- Add lightweight logging to a local file (rotating daily) so you can audit incoming messages and responses.
-- Add a small test suite for `ai_core.Answerer` (unit tests that assert expected answers for representative queries).
-- If you need higher throughput later, introduce a message queue and worker pool so webhooks return quickly and workers process answers asynchronously.
 
-These steps are practical next actions to make the project reliable and maintainable in a small team or solo environment.
