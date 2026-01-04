@@ -11,3 +11,7 @@ venv/
 
 # Logs
 *.log
+
+# Local tunneling / dev helper (do not commit binaries)
+ngrok/
+ngrok.zip
