@@ -26,10 +26,10 @@ logger = logging.getLogger(__name__)
 # Environment & clients
 # -------------------------
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN") or os.environ.get("TELEGRAM_BOT_TOKEN")
 TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN")
-TWILIO_WHATSAPP_FROM = os.environ.get("TWILIO_WHATSAPP_FROM")
+TWILIO_WHATSAPP_FROM = os.environ.get("TWILIO_WHATSAPP_FROM") or os.environ.get("TWILIO_WHATSAPP_NUMBER")
 REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
 
 twilio_client = None

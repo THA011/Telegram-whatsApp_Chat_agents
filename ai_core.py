@@ -12,8 +12,15 @@ import json
 from typing import List, Optional
 
 import yaml
-import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
+try:
+    import numpy as np
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    SKLEARN_AVAILABLE = True
+except Exception:
+    # Provide a lightweight fallback when heavy ML deps are not available.
+    np = None
+    TfidfVectorizer = None
+    SKLEARN_AVAILABLE = False
 
 try:
     import openai
@@ -68,9 +75,14 @@ class Answerer:
                     self.questions.append(q)
                     self.answers.append(a)
 
-        if self.questions:
-            self.vectorizer = TfidfVectorizer().fit(self.questions)
-            self.tfidf = self.vectorizer.transform(self.questions)
+        if self.questions and SKLEARN_AVAILABLE:
+            try:
+                self.vectorizer = TfidfVectorizer().fit(self.questions)
+                self.tfidf = self.vectorizer.transform(self.questions)
+            except Exception:
+                # fallback to non-sklearn mode
+                self.vectorizer = None
+                self.tfidf = None
 
     def answer(self, query: str) -> dict:
         """Return dict: {answer:str, score:float, index:int|None}.
@@ -87,15 +99,36 @@ class Answerer:
         if not self.questions:
             return {"answer": "I don't have any FAQ loaded yet. Please add entries to faq.yml.", "score": 0.0, "index": None}
 
-        q_vec = self.vectorizer.transform([q])
-        sims = (self.tfidf @ q_vec.T).toarray().ravel()
-        best_idx = int(np.argmax(sims))
-        best_score = float(sims[best_idx])
+        # If sklearn is available, use TF-IDF similarity
+        if SKLEARN_AVAILABLE and self.vectorizer is not None and self.tfidf is not None:
+            q_vec = self.vectorizer.transform([q])
+            sims = (self.tfidf @ q_vec.T).toarray().ravel()
+            best_idx = int(np.argmax(sims))
+            best_score = float(sims[best_idx])
 
-        if best_score < self.threshold:
-            return {"answer": "I couldn't find a confident answer. Can you rephrase or give more details?", "score": best_score, "index": None}
+            if best_score < self.threshold:
+                return {"answer": "I couldn't find a confident answer. Can you rephrase or give more details?", "score": best_score, "index": None}
 
-        return {"answer": self.answers[best_idx], "score": best_score, "index": best_idx}
+            return {"answer": self.answers[best_idx], "score": best_score, "index": best_idx}
+
+        # Fallback simple matcher: word-overlap heuristic (fast, no external deps)
+        q_words = set(re.findall(r"\w+", q.lower()))
+        best_idx = None
+        best_score = 0.0
+        for i, cand in enumerate(self.questions):
+            cand_words = set(re.findall(r"\w+", cand.lower()))
+            if not cand_words:
+                continue
+            overlap = q_words & cand_words
+            score = len(overlap) / max(1, len(cand_words))
+            if score > best_score:
+                best_score = score
+                best_idx = i
+
+        if best_score < self.threshold or best_idx is None:
+            return {"answer": "I couldn't find a confident answer. Can you rephrase or give more details?", "score": float(best_score), "index": None}
+
+        return {"answer": self.answers[best_idx], "score": float(best_score), "index": int(best_idx)}
 
 
 class AnswerEngine:
