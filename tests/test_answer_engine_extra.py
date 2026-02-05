@@ -1,5 +1,5 @@
 import os
-from ai_core import Answerer, AnswerEngine
+from chat_agents.ai_core import Answerer, AnswerEngine
 
 
 def test_answerer_basic():

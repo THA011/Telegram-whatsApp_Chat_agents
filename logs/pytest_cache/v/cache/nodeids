@@ -1,0 +1,19 @@
+[
+  "chat_agents/tests/test_ai_core.py::test_answerer_fallback",
+  "chat_agents/tests/test_ai_core.py::test_answerer_matches_kb",
+  "chat_agents/tests/test_answer_engine_extra.py::test_answerer_basic",
+  "chat_agents/tests/test_answer_engine_extra.py::test_engine_returns_string",
+  "chat_agents/tests/test_answer_engine_extra.py::test_env_example_contains_telegram_token",
+  "chat_agents/tests/test_answer_engine_extra2.py::test_answer_engine_returns_str_and_handles_memory",
+  "chat_agents/tests/test_db_zac.py::test_balance_and_loans",
+  "chat_agents/tests/test_db_zac.py::test_init_and_user_create",
+  "chat_agents/tests/test_docker_compose.py::test_compose_has_worker_and_db",
+  "chat_agents/tests/test_message_queue.py::test_enqueue_message_basic",
+  "chat_agents/tests/test_otp.py::test_create_and_verify_otp",
+  "chat_agents/tests/test_otp.py::test_expired_otp",
+  "chat_agents/tests/test_otp.py::test_send_otp_cmd_variants",
+  "chat_agents/tests/test_profile.py::test_profile_upsert_and_fetch",
+  "chat_agents/tests/test_system_smoke.py::test_end_to_end_otp_flow",
+  "chat_agents/tests/test_worker.py::test_enqueue_and_process_raw_message",
+  "chat_agents/tests/test_worker.py::test_enqueue_otp_for_user"
+]

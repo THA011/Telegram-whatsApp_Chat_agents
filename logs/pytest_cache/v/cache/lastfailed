@@ -1,0 +1,13 @@
+{
+  "chat_agents/tests/test_ai_core.py::test_answerer_matches_kb": true,
+  "chat_agents/tests/test_ai_core.py::test_answerer_fallback": true,
+  "chat_agents/tests/test_db_zac.py::test_init_and_user_create": true,
+  "chat_agents/tests/test_db_zac.py::test_balance_and_loans": true,
+  "chat_agents/tests/test_otp.py::test_create_and_verify_otp": true,
+  "chat_agents/tests/test_otp.py::test_expired_otp": true,
+  "chat_agents/tests/test_otp.py::test_send_otp_cmd_variants": true,
+  "chat_agents/tests/test_profile.py::test_profile_upsert_and_fetch": true,
+  "chat_agents/tests/test_system_smoke.py::test_end_to_end_otp_flow": true,
+  "chat_agents/tests/test_worker.py::test_enqueue_and_process_raw_message": true,
+  "chat_agents/tests/test_worker.py::test_enqueue_otp_for_user": true
+}

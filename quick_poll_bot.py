@@ -3,12 +3,16 @@
 Minimal Telegram polling bot that avoids third-party Telegram libraries so it
 can run quickly. Uses the local `ai_core.AnswerEngine` to generate replies.
 """
+
 import os
 import time
 import json
 import urllib.parse
 import urllib.request
-from ai_core import AnswerEngine
+try:
+    from .ai_core import AnswerEngine
+except ImportError:
+    from ai_core import AnswerEngine
 
 TOKEN = os.environ.get("TELEGRAM_TOKEN")
 if not TOKEN:
@@ -17,13 +21,15 @@ if not TOKEN:
 
 BASE = f"https://api.telegram.org/bot{TOKEN}"
 
+
 def get_updates(offset=None, timeout=20):
     url = f"{BASE}/getUpdates?timeout={timeout}"
     if offset:
         url += f"&offset={offset}"
-    with urllib.request.urlopen(url, timeout=timeout+5) as r:
+    with urllib.request.urlopen(url, timeout=timeout + 5) as r:
         data = json.load(r)
     return data
+
 
 def send_message(chat_id, text):
     data = urllib.parse.urlencode({"chat_id": chat_id, "text": text}).encode()
@@ -31,9 +37,9 @@ def send_message(chat_id, text):
     with urllib.request.urlopen(req, timeout=10) as r:
         return json.load(r)
 
+
 def main():
     engine = AnswerEngine()  # uses faq.yml and optional LLM if configured
-    last_update = None
     offset = None
     print("Starting quick polling bot. Press CTRL+C to stop.")
     while True:
@@ -68,5 +74,6 @@ def main():
             print("Error in poll loop:", e)
             time.sleep(2)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

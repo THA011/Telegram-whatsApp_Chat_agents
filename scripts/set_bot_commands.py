@@ -3,6 +3,7 @@
 Usage:
   TELEGRAM_TOKEN=... python scripts/set_bot_commands.py --name "Display Name" --description "Short description"
 """
+
 import os
 import sys
 import json

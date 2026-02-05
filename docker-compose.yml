@@ -10,9 +10,21 @@ services:
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       - redis
+    volumes:
+      - ./zac.db:/app/chat_agents/zac.db
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O- http://localhost:5000/health || exit 1"]
+  worker:
+    build: .
+    command: ["python", "-m", "chat_agents.worker"]
+    env_file:
+      - .env
+    volumes:
+      - ./zac.db:/app/chat_agents/zac.db
+    depends_on:
+      - redis
+    restart: unless-stopped
   redis:
     image: redis:7-alpine
     restart: unless-stopped

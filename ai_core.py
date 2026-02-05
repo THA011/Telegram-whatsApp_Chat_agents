@@ -5,16 +5,18 @@ Lightweight answer engine using TF-IDF similarity over `faq.yml`.
 Provides a small wrapper `AnswerEngine` used by the webhook server. Keeps the
 original `Answerer` for unit tests and simple offline use.
 """
+
 from pathlib import Path
 import os
 import re
-import json
 from typing import List, Optional
 
 import yaml
+
 try:
     import numpy as np
     from sklearn.feature_extraction.text import TfidfVectorizer
+
     SKLEARN_AVAILABLE = True
 except Exception:
     # Provide a lightweight fallback when heavy ML deps are not available.
@@ -63,7 +65,7 @@ class Answerer:
             txt = p.read_text(encoding="utf-8")
             blocks = [b.strip() for b in re.split(r"\n\s*\n", txt) if b.strip()]
             for block in blocks:
-                lines = [l.strip() for l in block.splitlines() if l.strip()]
+                lines = [ln.strip() for ln in block.splitlines() if ln.strip()]
                 if not lines:
                     continue
                 q = lines[0]
@@ -91,13 +93,25 @@ class Answerer:
         """
         q = (query or "").strip()
         if not q:
-            return {"answer": "I didn't get a message — please type your question.", "score": 0.0, "index": None}
+            return {
+                "answer": "I didn't get a message — please type your question.",
+                "score": 0.0,
+                "index": None,
+            }
 
         if q.lower() in ("hi", "hello", "hey", "good morning", "good evening"):
-            return {"answer": "Hello — tell me what you need help with or ask a question.", "score": 1.0, "index": None}
+            return {
+                "answer": "Hello — tell me what you need help with or ask a question.",
+                "score": 1.0,
+                "index": None,
+            }
 
         if not self.questions:
-            return {"answer": "I don't have any FAQ loaded yet. Please add entries to faq.yml.", "score": 0.0, "index": None}
+            return {
+                "answer": "I don't have any FAQ loaded yet. Please add entries to faq.yml.",
+                "score": 0.0,
+                "index": None,
+            }
 
         # If sklearn is available, use TF-IDF similarity
         if SKLEARN_AVAILABLE and self.vectorizer is not None and self.tfidf is not None:
@@ -107,9 +121,20 @@ class Answerer:
             best_score = float(sims[best_idx])
 
             if best_score < self.threshold:
-                return {"answer": "I couldn't find a confident answer. Can you rephrase or give more details?", "score": best_score, "index": None}
+                return {
+                    "answer": (
+                        "I couldn't find a confident answer. "
+                        "Can you rephrase or give more details?"
+                    ),
+                    "score": best_score,
+                    "index": None,
+                }
 
-            return {"answer": self.answers[best_idx], "score": best_score, "index": best_idx}
+            return {
+                "answer": self.answers[best_idx],
+                "score": best_score,
+                "index": best_idx,
+            }
 
         # Fallback simple matcher: word-overlap heuristic (fast, no external deps)
         q_words = set(re.findall(r"\w+", q.lower()))
@@ -126,9 +151,20 @@ class Answerer:
                 best_idx = i
 
         if best_score < self.threshold or best_idx is None:
-            return {"answer": "I couldn't find a confident answer. Can you rephrase or give more details?", "score": float(best_score), "index": None}
+            return {
+                "answer": (
+                    "I couldn't find a confident answer. "
+                    "Can you rephrase or give more details?"
+                ),
+                "score": float(best_score),
+                "index": None,
+            }
 
-        return {"answer": self.answers[best_idx], "score": float(best_score), "index": int(best_idx)}
+        return {
+            "answer": self.answers[best_idx],
+            "score": float(best_score),
+            "index": int(best_idx),
+        }
 
 
 class AnswerEngine:
@@ -139,7 +175,9 @@ class AnswerEngine:
     for low-confidence TF-IDF replies.
     """
 
-    def __init__(self, redis_client=None, kb_path: Optional[str] = None, use_llm: bool = False):
+    def __init__(
+        self, redis_client=None, kb_path: Optional[str] = None, use_llm: bool = False
+    ):
         self.redis = redis_client
         self.answerer = Answerer(kb_path=kb_path)
         self.use_llm = use_llm and (openai is not None)
@@ -168,14 +206,22 @@ class AnswerEngine:
 
     def answer(self, user_text: str, memory: Optional[List[dict]] = None) -> str:
         # memory: list of {role, text, ts}
-        mem_text = "\n".join([f"{m.get('role')}: {m.get('text')}" if isinstance(m, dict) else str(m) for m in (memory or [])])
+        mem_text = "\n".join(
+            [
+                f"{m.get('role')}: {m.get('text')}" if isinstance(m, dict) else str(m)
+                for m in (memory or [])
+            ]
+        )
         qa = self.answerer.answer(user_text)
         if qa.get("score", 0.0) >= self.answerer.threshold:
             return qa.get("answer")
 
         # low confidence — use LLM if enabled
         if self.use_llm:
-            prompt = f"User: {user_text}\nContext:\n{mem_text}\nProvide a helpful, concise answer."
+            prompt = (
+                f"User: {user_text}\nContext:\n{mem_text}\n"
+                "Provide a helpful, concise answer."
+            )
             llm_reply = self._call_llm(prompt)
             if llm_reply:
                 return llm_reply
@@ -186,5 +232,10 @@ class AnswerEngine:
 
 if __name__ == "__main__":
     ae = Answerer()
-    for q in ["How do I set up Twilio?", "hello", "what is supported"]:
+    qs = [
+        "How do I set up Twilio?",
+        "hello",
+        "what is supported",
+    ]
+    for q in qs:
         print(q, "=>", ae.answer(q))
