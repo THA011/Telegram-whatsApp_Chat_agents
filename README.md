@@ -1,6 +1,6 @@
 # chat_agents
 
-[![CI](https://github.com/THA011/Telegram-whatsApp_Chat_agents/actions/workflows/ci.yml/badge.svg)](https://github.com/THA011/Telegram-whatsApp_Chat_agents/actions/workflows/ci.yml)
+[![CI](https://github.com/[THA011](https://www.linkedin.com/in/mwatha-maina-a44146238/?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3BvhFk4SH7Ry%2BXILfXlHD2Rw%3D%3D)/Telegram-whatsApp_Chat_agents/actions/workflows/ci.yml/badge.svg)](https://github.com/THA011/Telegram-whatsApp_Chat_agents/actions/workflows/ci.yml)
 
 This project contains two small messaging agents (Telegram and WhatsApp) that reply to user messages using a lightweight local answer engine.
 
@@ -171,13 +171,6 @@ python -m pytest -q
 
 **Dev behavior note:** In development, OTP codes are returned when Twilio is not configured (for convenience). In production, you must set Twilio env vars and disable dev fallbacks.
 
----
 
-## Final system test & wrap-up ✅
-
-- I added a **system smoke test** `chat_agents/tests/test_system_smoke.py` that creates a user, generates an OTP, and verifies end-to-end message delivery via the worker using a mocked Twilio client.
-- Run the smoke test locally (see "Running system smoke tests" above). If it passes, the codebase is functionally integrated for the OTP + worker flow.
-
-If you'd like, I can now push these changes to GitHub and open a PR to run CI (black/flake8/mypy/pytest/pip-audit/CodeQL/Trivy) — please confirm and grant permission to push, or tell me which branch name to use.
-
-
+Whatsapp: THA_o11  
+Linkdn: "https://www.linkedin.com/in/mwatha-maina-a44146238/?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3BvhFk4SH7Ry%2BXILfXlHD2Rw%3D%3D"
